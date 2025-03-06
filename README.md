@@ -19,11 +19,12 @@ This mod changes some interface windows/pop-ups/menus:
 - [BepInEx/BepInEx.PluginInfoProps](https://nuget.bepinex.dev/packages/BepInEx.PluginInfoProps) - v2.1.0
 - [JamesNK/Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) - v13.0.1
 
+## Support
+For STFC BepInEx items, please visit the [BORG Box](https://discord.gg/8MRcfserGH) discord server.
+
 ## Result screenshots
 ![UniversalTranslator1](UniversalTranslator_before.png)
 ![UniversalTranslator2](UniversalTranslator1.png)
 ![UniversalTranslator3](UniversalTranslator_after.png)
-
-
 
 
