@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>Optimus.STFC.UniversalTranslator</AssemblyName>
     <Description>UniversalTranslator</Description>
-    <Version>1.4.1</Version>
+    <Version>1.5.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -28,6 +28,9 @@
     </Reference>
     <Reference Include="Digit.Engine.Login.Prime">
       <HintPath>..\UnhollowedDlls\Digit.Engine.Login.Prime.dll</HintPath>
+    </Reference>
+    <Reference Include="Digit.Engine.Utilities.Runtime">
+      <HintPath>..\..\UnhollowedDlls\Digit.Engine.Utilities.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Il2Cppmscorlib">
       <HintPath>..\UnhollowedDlls\Il2Cppmscorlib.dll</HintPath>

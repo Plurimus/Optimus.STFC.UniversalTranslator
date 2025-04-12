@@ -15,6 +15,10 @@ using System.Threading;
 using System.Text.RegularExpressions;
 using UnhollowerBaseLib;
 using static Optimus.STFC.UniversalTranslator.Utils;
+using Digit.PrimeServer.Core;
+using Digit.PrimePlatform.Services;
+using Digit.Networking.Core;
+using Utils = Optimus.STFC.UniversalTranslator.Utils;
 
 namespace STFCUniversalTranslator
 {
@@ -36,7 +40,12 @@ namespace STFCUniversalTranslator
         internal static new ManualLogSource Log;
 
         private static ConfigEntry<string> configChatTranslateToLanguage;
+
+        private static ConfigEntry<bool> configTranslateOutgoing; 
+        private static ConfigEntry<string> configTranslateOutgoingToLanguage;
+
         private static ConfigEntry<string> configDeeplApiKey;
+        
         private static ConfigEntry<bool> configVerbose;    
 
         public override void Load()
@@ -61,8 +70,8 @@ namespace STFCUniversalTranslator
                         TranslatorDeeplKeys.DE.ToDescription(),
                         TranslatorDeeplKeys.EL.ToDescription(),
                         TranslatorDeeplKeys.EN.ToDescription(),
-                        TranslatorDeeplKeys.EN_GB.ToDescription(),
-                        TranslatorDeeplKeys.EN_US.ToDescription(),
+                        //TranslatorDeeplKeys.EN_GB.ToDescription(),
+                        //TranslatorDeeplKeys.EN_US.ToDescription(),
                         TranslatorDeeplKeys.ES.ToDescription(),
                         TranslatorDeeplKeys.ET.ToDescription(),
                         TranslatorDeeplKeys.FI.ToDescription(),
@@ -78,8 +87,8 @@ namespace STFCUniversalTranslator
                         TranslatorDeeplKeys.NL.ToDescription(),
                         TranslatorDeeplKeys.PL.ToDescription(),
                         TranslatorDeeplKeys.PT.ToDescription(),
-                        TranslatorDeeplKeys.PT_BR.ToDescription(),
-                        TranslatorDeeplKeys.PT_PT.ToDescription(),
+                        //TranslatorDeeplKeys.PT_BR.ToDescription(),
+                        //TranslatorDeeplKeys.PT_PT.ToDescription(),
                         TranslatorDeeplKeys.RO.ToDescription(),
                         TranslatorDeeplKeys.RU.ToDescription(),
                         TranslatorDeeplKeys.SK.ToDescription(),
@@ -90,7 +99,53 @@ namespace STFCUniversalTranslator
                         TranslatorDeeplKeys.ZH.ToDescription()
                                                 )
                                    )
-        );
+                                                    );
+
+            configTranslateOutgoing = Config.Bind("General",
+                    "Translate all outgoing massages",  // The key of the configuration option in the configuration file
+                    false, // The default value
+                    "Переводить исходящие сообщения");
+
+            configTranslateOutgoingToLanguage = Config.Bind(new ConfigDefinition("General", "What language outgoing messages will be translated to"),
+                    TranslatorDeeplKeys.RU.ToDescription(),
+                    new ConfigDescription("На какой язык переводить отправляемые сообщения",
+                        new AcceptableValueList<string>(
+                                TranslatorDeeplKeys.BG.ToDescription(),
+                                TranslatorDeeplKeys.CS.ToDescription(),
+                                TranslatorDeeplKeys.DA.ToDescription(),
+                                TranslatorDeeplKeys.DE.ToDescription(),
+                                TranslatorDeeplKeys.EL.ToDescription(),
+                                TranslatorDeeplKeys.EN.ToDescription(),
+                                //TranslatorDeeplKeys.EN_GB.ToDescription(),
+                                //TranslatorDeeplKeys.EN_US.ToDescription(),
+                                TranslatorDeeplKeys.ES.ToDescription(),
+                                TranslatorDeeplKeys.ET.ToDescription(),
+                                TranslatorDeeplKeys.FI.ToDescription(),
+                                TranslatorDeeplKeys.FR.ToDescription(),
+                                TranslatorDeeplKeys.HU.ToDescription(),
+                                TranslatorDeeplKeys.ID.ToDescription(),
+                                TranslatorDeeplKeys.IT.ToDescription(),
+                                TranslatorDeeplKeys.JA.ToDescription(),
+                                TranslatorDeeplKeys.KO.ToDescription(),
+                                TranslatorDeeplKeys.LT.ToDescription(),
+                                TranslatorDeeplKeys.LV.ToDescription(),
+                                TranslatorDeeplKeys.NB.ToDescription(),
+                                TranslatorDeeplKeys.NL.ToDescription(),
+                                TranslatorDeeplKeys.PL.ToDescription(),
+                                TranslatorDeeplKeys.PT.ToDescription(),
+                                //TranslatorDeeplKeys.PT_BR.ToDescription(),
+                                //TranslatorDeeplKeys.PT_PT.ToDescription(),
+                                TranslatorDeeplKeys.RO.ToDescription(),
+                                TranslatorDeeplKeys.RU.ToDescription(),
+                                TranslatorDeeplKeys.SK.ToDescription(),
+                                TranslatorDeeplKeys.SL.ToDescription(),
+                                TranslatorDeeplKeys.SV.ToDescription(),
+                                TranslatorDeeplKeys.TR.ToDescription(),
+                                TranslatorDeeplKeys.UK.ToDescription(),
+                                TranslatorDeeplKeys.ZH.ToDescription()
+                                                        )
+                                            )
+                                                            );
 
 
             configDeeplApiKey = Config.Bind("General",
@@ -181,6 +236,19 @@ namespace STFCUniversalTranslator
                     }
                 }
             }
+        }
+
+        [HarmonyPatch(typeof(GameServer), "Initialise")]
+        [HarmonyPostfix]
+        [HarmonyWrapSafe]
+        public static void GetSessionID(string sessionId, string gameVersion, bool encryptRequests)
+        {
+            if (configVerbose.Value) Log.LogInfo($"GameServer:\n" +
+                                                    $"\t\t\t\t sessionId =\t{sessionId}\n" +
+                                                    $"\t\t\t\t gameVersion =\t{gameVersion}\n" +
+                                                    $"\t\t\t\t encryptRequests =\t{encryptRequests}\n");
+
+            translatorButtonRendered = false; // reset rendering of Translator Button
         }
         #endregion
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -377,5 +445,40 @@ namespace STFCUniversalTranslator
                 }
             }
         }
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        #region Outgoing translate logic
+
+        [HarmonyPatch(typeof(ChatService), "SendMessage", new System.Type[] { typeof(string), typeof(string), typeof(CallbackContainer<string>) })] //"Show", new System.Type[] { typeof(int), typeof(bool) })] //"Start")]
+        [HarmonyPrefix]
+        [HarmonyWrapSafe]
+        public static void SendMessage(string channelID, ref string message, CallbackContainer<string> callback)
+        {
+            if (configVerbose.Value) Log.LogInfo($"ChatService.SendMessage(string channelID, string message, Digit.Networking.Core.CallbackContainer<string> callback):\n" +
+                                                    $"\t\t\t\t channelID =\t{channelID}\n" +
+                                                    $"\t\t\t\t message   =\t{message}\n" +
+                                                    $"\t\t\t\t callback  =\t{callback}\n");
+
+            string textToTranslate = message;
+
+            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t Try translate through [https://deepl.com/] input: {textToTranslate}");
+
+            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t Invoking translate method whit params: \r\n" +
+                $"\t\t\t\t\t\t text       = {textToTranslate} \r\n" +
+                $"\t\t\t\t\t\t toLanguage = {configChatTranslateToLanguage.Value.ToString()} \r\n" +
+                $"\t\t\t\t\t\t apiKey     = {configDeeplApiKey.Value}" +
+                $"");
+            TranslatorDeeplKeys toLang = Optimus.STFC.UniversalTranslator.EnumExtensions.GetValueFromDescription<TranslatorDeeplKeys>(configTranslateOutgoingToLanguage.Value);
+            KeyValuePair<string, string> translate = Utils.TranslateDeepl(textToTranslate, toLang, Log, configVerbose.Value, configDeeplApiKey.Value);
+            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t from language: {translate.Key}. result: {translate.Value}");
+            message = translate.Value;
+            if (configVerbose.Value) Log.LogInfo($"ChatService.SendMessage(string channelID, string message, Digit.Networking.Core.CallbackContainer<string> callback):\n" +
+                                        $"\t\t\t\t channelID =\t{channelID}\n" +
+                                        $"\t\t\t\t message   =\t{message}\n" +
+                                        $"\t\t\t\t callback  =\t{callback}\n");
+        }
+
+        #endregion
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 }
