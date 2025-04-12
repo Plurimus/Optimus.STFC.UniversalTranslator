@@ -30,5 +30,7 @@ For STFC BepInEx items, please visit the [BORG Box](https://discord.gg/8MRcfserG
 ![UniversalTranslator1](UniversalTranslator_before.png)
 ![UniversalTranslator2](UniversalTranslator1.png)
 ![UniversalTranslator3](UniversalTranslator_after.png)
+![UniversalTranslator4](UniversalTranslator_outgoing.png)
+![UniversalTranslator5](UniversalTranslator_settings.png)
 
 
