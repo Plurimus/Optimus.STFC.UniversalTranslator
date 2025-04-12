@@ -454,28 +454,32 @@ namespace STFCUniversalTranslator
         [HarmonyWrapSafe]
         public static void SendMessage(string channelID, ref string message, CallbackContainer<string> callback)
         {
-            if (configVerbose.Value) Log.LogInfo($"ChatService.SendMessage(string channelID, string message, Digit.Networking.Core.CallbackContainer<string> callback):\n" +
-                                                    $"\t\t\t\t channelID =\t{channelID}\n" +
-                                                    $"\t\t\t\t message   =\t{message}\n" +
-                                                    $"\t\t\t\t callback  =\t{callback}\n");
-
-            string textToTranslate = message;
-
-            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t Try translate through [https://deepl.com/] input: {textToTranslate}");
-
-            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t Invoking translate method whit params: \r\n" +
-                $"\t\t\t\t\t\t text       = {textToTranslate} \r\n" +
-                $"\t\t\t\t\t\t toLanguage = {configChatTranslateToLanguage.Value.ToString()} \r\n" +
-                $"\t\t\t\t\t\t apiKey     = {configDeeplApiKey.Value}" +
-                $"");
-            TranslatorDeeplKeys toLang = Optimus.STFC.UniversalTranslator.EnumExtensions.GetValueFromDescription<TranslatorDeeplKeys>(configTranslateOutgoingToLanguage.Value);
-            KeyValuePair<string, string> translate = Utils.TranslateDeepl(textToTranslate, toLang, Log, configVerbose.Value, configDeeplApiKey.Value);
-            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t from language: {translate.Key}. result: {translate.Value}");
-            message = translate.Value;
-            if (configVerbose.Value) Log.LogInfo($"ChatService.SendMessage(string channelID, string message, Digit.Networking.Core.CallbackContainer<string> callback):\n" +
+            if (configTranslateOutgoing.Value)
+            {
+                if (configVerbose.Value) Log.LogInfo($"ChatService.SendMessage(string channelID, string message, Digit.Networking.Core.CallbackContainer<string> callback):\n" +
                                         $"\t\t\t\t channelID =\t{channelID}\n" +
                                         $"\t\t\t\t message   =\t{message}\n" +
                                         $"\t\t\t\t callback  =\t{callback}\n");
+
+                string textToTranslate = message;
+
+                if (configVerbose.Value) Log.LogInfo($"\t\t\t\t Try translate through [https://deepl.com/] input: {textToTranslate}");
+
+                if (configVerbose.Value) Log.LogInfo($"\t\t\t\t Invoking translate method whit params: \r\n" +
+                    $"\t\t\t\t\t\t text       = {textToTranslate} \r\n" +
+                    $"\t\t\t\t\t\t toLanguage = {configChatTranslateToLanguage.Value.ToString()} \r\n" +
+                    $"\t\t\t\t\t\t apiKey     = {configDeeplApiKey.Value}" +
+                    $"");
+                TranslatorDeeplKeys toLang = Optimus.STFC.UniversalTranslator.EnumExtensions.GetValueFromDescription<TranslatorDeeplKeys>(configTranslateOutgoingToLanguage.Value);
+                KeyValuePair<string, string> translate = Utils.TranslateDeepl(textToTranslate, toLang, Log, configVerbose.Value, configDeeplApiKey.Value);
+                if (configVerbose.Value) Log.LogInfo($"\t\t\t\t from language: {translate.Key}. result: {translate.Value}");
+                message = translate.Value;
+                if (configVerbose.Value) Log.LogInfo($"ChatService.SendMessage(string channelID, string message, Digit.Networking.Core.CallbackContainer<string> callback):\n" +
+                                            $"\t\t\t\t channelID =\t{channelID}\n" +
+                                            $"\t\t\t\t message   =\t{message}\n" +
+                                            $"\t\t\t\t callback  =\t{callback}\n");
+            }
+
         }
 
         #endregion
