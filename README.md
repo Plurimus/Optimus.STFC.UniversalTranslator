@@ -14,7 +14,7 @@ This mod changes some interface windows/pop-ups/menus:
 - run the game client and wait until BepInEx will make unhollowed assemblies in `..\BepInEx\unhollowed\` folder
 - delete from `..\BepInEx\unhollowed\` folder the `Newtonsoft.Json.dll` and `UnityEngine.TLSModule.dll` (it can bother other mods)
 - unpack [BepInExConfigManager.Il2Cpp](https://github.com/sinai-dev/BepInExConfigManager) plugin to `..\BepInEx\` folder
-- unpack Optimus.STFC.UniversalTranslator archive to BepInEx folder so it will copy `Optimus.STFC.UniversalTranslator.dll` to `C:\Games\Star Trek Fleet Command\Star Trek Fleet Command\default\game\BepInEx\plugins\`
+- unpack Optimus.STFC.UniversalTranslator archive to BepInEx folder so it will copy `Optimus.STFC.UniversalTranslator.dll` and `Newtonsoft.Json.dll` to `C:\Games\Star Trek Fleet Command\Star Trek Fleet Command\default\game\BepInEx\plugins\`
 - make a link file to `prime.exe` and start the game client with it to avoid automatic updates
 - use F5 to open plugin settings window in game client to change the settings. 
 
