@@ -1,5 +1,5 @@
 # UniversalTranslator plugin/mod for Star Trek Fleet Command™ game client
-Tested with STFC client v1.000.41004 (Update 75.2.0)
+Tested with STFC client v1.000.41571 (Update 77.0.0)
 Designed to use with [BepInEx.Legacy](https://github.com/Plurimus/BepInEx.Legacy) framework.
 Recommended to use with [BepInExConfigManager.Il2Cpp](https://github.com/sinai-dev/BepInExConfigManager) plugin as ingame settings editor
 
@@ -7,7 +7,7 @@ Recommended to use with [BepInExConfigManager.Il2Cpp](https://github.com/sinai-d
 This mod changes some interface windows/pop-ups/menus:
 - Adds button to chat message menu
 - Translates message one by one to choosed language in settings
-- Translates outgoing message oon the fly to choosed in settings language (v1.5.0)
+- Translates outgoing message oon the fly to choosed in settings language (v1.5.1)
   
 ## How to install
 - unpack BepInEx framework release archive into STFC game folder which is usually located at `C:\Games\Star Trek Fleet Command\Star Trek Fleet Command\default\game`
