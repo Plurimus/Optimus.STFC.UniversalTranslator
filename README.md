@@ -1,5 +1,5 @@
 # UniversalTranslator plugin/mod for Star Trek Fleet Command™ game client
-Tested with STFC client v1.000.41571 (Update 77.0.0)
+Tested with STFC client v1.000.42747 (Update 79.1.1)
 Designed to use with [BepInEx.Legacy](https://github.com/Plurimus/BepInEx.Legacy) framework.
 Recommended to use with [BepInExConfigManager.Il2Cpp](https://github.com/sinai-dev/BepInExConfigManager) plugin as ingame settings editor
 
