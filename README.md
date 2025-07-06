@@ -7,7 +7,8 @@ Recommended to use with [BepInExConfigManager.Il2Cpp](https://github.com/sinai-d
 This mod changes some interface windows/pop-ups/menus:
 - Adds button to chat message menu
 - Translates message one by one to choosed language in settings
-- Translates outgoing message oon the fly to choosed in settings language (v1.5.1)
+- Translates outgoing message oon the fly to choosed in settings language (v1.5.1+)
+- Sends message to all alliance members by additional button (v1.6.0)
   
 ## How to install
 - unpack BepInEx framework release archive into STFC game folder which is usually located at `C:\Games\Star Trek Fleet Command\Star Trek Fleet Command\default\game`
@@ -32,5 +33,6 @@ For STFC BepInEx items, please visit the [BORG Box](https://discord.gg/8MRcfserG
 ![UniversalTranslator3](UniversalTranslator_after.png)
 ![UniversalTranslator4](UniversalTranslator_outgoing.png)
 ![UniversalTranslator5](UniversalTranslator_settings.png)
+![UniversalTranslator6](UniversalTranslator_AllAlliance.png)
 
 
