@@ -19,6 +19,10 @@ using Digit.PrimeServer.Core;
 using Digit.PrimePlatform.Services;
 using Digit.Networking.Core;
 using Utils = Optimus.STFC.UniversalTranslator.Utils;
+using Digit.PrimePlatform.Content;
+using Digit.Prime.Navigation.Managers;
+using Digit.Prime.Alliances;
+using Digit.Prime.FleetManagement;
 
 namespace STFCUniversalTranslator
 {
@@ -45,7 +49,9 @@ namespace STFCUniversalTranslator
         private static ConfigEntry<string> configTranslateOutgoingToLanguage;
 
         private static ConfigEntry<string> configDeeplApiKey;
-        
+        public  static ConfigEntry<bool> configUseProxyDeepl;
+        public  static ConfigEntry<bool> configActivateSendAllButton;
+
         private static ConfigEntry<bool> configVerbose;    
 
         public override void Load()
@@ -152,6 +158,14 @@ namespace STFCUniversalTranslator
                     "Deepl.com API key (if you want your own stable translator). Leave it empty for default.",
                     "",
                     "Ключ API для сервиса Deepl.com (если хотите собственный стабильный переводчик). Оставить поле пустым если не нужно");
+            configUseProxyDeepl = Config.Bind("General",      // The section under which the option is shown
+                    "Use proxy endpoint for Deepl.com requests", 
+                    true,
+                    "Использовать прокси сервер для запросов на Deepl.com");
+            configActivateSendAllButton = Config.Bind("General",      // The section under which the option is shown
+                "Turn on button for sending message to all alliance members",
+                false,
+                "Включить кнопку массовой рассылки сообщения всем членам альянса");
             configVerbose = Config.Bind("General",      // The section under which the option is shown
                     "Verbose",  // The key of the configuration option in the configuration file
                     false, // The default value
@@ -161,7 +175,27 @@ namespace STFCUniversalTranslator
             Log.LogInfo($"Plugin {GUID} is loaded!");
 
         }
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        #region Login logic
 
+        [HarmonyPatch(typeof(GameServer), "Initialise")]
+        [HarmonyPostfix]
+        [HarmonyWrapSafe]
+        public static void GetSessionID(string sessionId, string gameVersion, bool encryptRequests)
+        {
+            if (configVerbose.Value) Log.LogInfo($"GameServer:\n" +
+                                                    $"\t\t\t\t sessionId =\t{sessionId}\n" +
+                                                    $"\t\t\t\t gameVersion =\t{gameVersion}\n" +
+                                                    $"\t\t\t\t encryptRequests =\t{encryptRequests}\n");
+
+            translatorButtonRendered = false; // reset rendering of Translator Button
+            sendAllButtonRendered = false;
+        }
+
+        
+
+        #endregion
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Translate Button Rendering
 
@@ -238,22 +272,74 @@ namespace STFCUniversalTranslator
             }
         }
 
-        [HarmonyPatch(typeof(GameServer), "Initialise")]
-        [HarmonyPostfix]
-        [HarmonyWrapSafe]
-        public static void GetSessionID(string sessionId, string gameVersion, bool encryptRequests)
-        {
-            if (configVerbose.Value) Log.LogInfo($"GameServer:\n" +
-                                                    $"\t\t\t\t sessionId =\t{sessionId}\n" +
-                                                    $"\t\t\t\t gameVersion =\t{gameVersion}\n" +
-                                                    $"\t\t\t\t encryptRequests =\t{encryptRequests}\n");
 
-            translatorButtonRendered = false; // reset rendering of Translator Button
-        }
         #endregion
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        #region Send All Alliance message
+        internal static bool sendAllButtonRendered = false;
 
+        public static AllianceManager AllianceManager { get; set; }
 
+        [HarmonyPatch(typeof(CanvasController), "LateUpdate")]
+        [HarmonyPostfix]
+        public static void CanvasController_Update_2(CanvasController __instance)
+        {
+            if (__instance != null)
+            {
+                if (__instance.name == "MainChatScreen_Canvas")
+                {
+
+                    if (!sendAllButtonRendered)
+                    {
+                        if (__instance.transform.Find("ChatListContainer/ChatScrollRect/Viewport/Content/SendAllAllianceButton") == null)
+                        {
+                            try
+                            {
+                                if (configVerbose.Value) Log.LogInfo($"Creating send all alliance Button. Trying to find Large alliance button");
+
+                                Transform largeButton = __instance.transform.root.Find("CanvasRoot/MainFrame/HUD_LeftButtons_Canvas/LargeButton");
+                                if (largeButton != null)
+                                { 
+                                    if (configVerbose.Value) Log.LogInfo($"found");
+                                    if (configVerbose.Value) Log.LogInfo($"Trying to create send all alliance Button");
+                                    Transform chatScrollContent = __instance.transform.Find("ChatListContainer/ChatScrollRect/Viewport/Content");
+
+                                    Transform sendAllAllianceButton = UnityEngine.Object.Instantiate(largeButton, chatScrollContent);
+                                    if (sendAllAllianceButton != null)
+                                    {
+                                        if (configVerbose.Value) Log.LogInfo($"created");
+                                        sendAllAllianceButton.name = "SendAllAllianceButton"; if (configVerbose.Value) Log.LogInfo($"set name");
+                                        sendAllAllianceButton.Find("PipContainer").gameObject.SetActive(false);
+                                        sendAllAllianceButton.Find("ShortcutKeybindHint").gameObject.SetActive(false);
+                                        sendAllAllianceButton.gameObject.SetActive(configActivateSendAllButton.Value);
+                                        if (configVerbose.Value) Log.LogInfo($"Set send all alliance Button rendered true");
+                                        sendAllButtonRendered = true;
+                                    }
+                                    else
+                                    {
+                                        if (configVerbose.Value) Log.LogInfo($"NOT created");
+                                    }
+                                }
+                                else
+                                {
+                                    if (configVerbose.Value) Log.LogInfo($"NOT found");
+                                }
+                            }
+                            catch (System.Exception e)
+                            {
+                                if (configVerbose.Value) Log.LogInfo($"ERROR: {e.Message}");
+                                throw;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        __instance.transform.Find("ChatListContainer/ChatScrollRect/Viewport/Content/SendAllAllianceButton")?.gameObject.SetActive(configActivateSendAllButton.Value);
+                    }
+                }
+            }
+        }
+        #endregion
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HarmonyPatch(typeof(Button), "Press")]
         [HarmonyPostfix]
@@ -442,6 +528,69 @@ namespace STFCUniversalTranslator
 
                     __instance.transform.parent.GetComponentsInChildren<Button>(true)[4].Press();
 
+                }
+
+                if (__instance.name == "SendAllAllianceButton")
+                {
+                    if (configVerbose.Value) Log.LogInfo($"\t\t\t\t Start all alliance messaging");
+
+                    if (configVerbose.Value) Log.LogInfo($"\t\t\t\t Get Alliance Manager");
+
+                    AllianceManager = GameObject.FindObjectOfType<AllianceManager>();
+                    if (AllianceManager != null)
+                    {
+                        if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t\t Alliance manager instance found");
+                        if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t\t Get alliance members list");
+                        var allianceProfile = AllianceManager.GetLocalAllianceProfile();
+                        if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t\t members count: {allianceProfile.MemberCount}");
+                        foreach (var member in allianceProfile.Members.Keys)
+                        {
+                            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t\t\t {member}");
+                        }
+                        var textInput = __instance.transform.root.Find("CanvasRoot/MainFrame/MainChatScreen_Canvas/Footer/InputContent/InputContainer/InputField/Text Area/Text");
+                        var message = textInput.GetComponent<Kyub.EmojiSearch.UI.TMP_EmojiTextUGUI>().text;
+                        if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t message text: {message}");
+
+                        if (configTranslateOutgoing.Value)
+                        {
+                            string textToTranslate = message;
+
+                            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t Try translate through [https://deepl.com/] input: {textToTranslate}");
+
+                            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t Invoking translate method whit params: \r\n" +
+                                $"\t\t\t\t\t\t text       = {textToTranslate} \r\n" +
+                                $"\t\t\t\t\t\t toLanguage = {configChatTranslateToLanguage.Value.ToString()} \r\n" +
+                                $"\t\t\t\t\t\t apiKey     = {configDeeplApiKey.Value}" +
+                                $"");
+                            TranslatorDeeplKeys toLang = Optimus.STFC.UniversalTranslator.EnumExtensions.GetValueFromDescription<TranslatorDeeplKeys>(configTranslateOutgoingToLanguage.Value);
+                            KeyValuePair<string, string> translate = Utils.TranslateDeepl(textToTranslate, toLang, Log, configVerbose.Value, configDeeplApiKey.Value);
+                            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t\t from language: {translate.Key}. result: {translate.Value}");
+                            message = translate.Value;
+                            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t message text: {message}");
+                        }
+
+                        if (configVerbose.Value) Log.LogInfo($"\t\t\t\t Get Chat manager: {message}");
+                        var ChatManager = GameObject.FindObjectOfType<Digit.Prime.Chat.ChatManager>();
+                        if (ChatManager != null)
+                        {
+                            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t\t Chat manager instance found. Start sending messages");
+                            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t\t remember Translate Outgoing setting and turn it off");
+                            bool configTranslateOutgoing_temp = configTranslateOutgoing.Value;
+                            configTranslateOutgoing.Value = false;
+                            foreach (var member in allianceProfile.Members.Keys)
+                            {
+                                if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t\t\t Send message to {member}");
+                                ChatManager.SendMessage($"usr_{member}",message);
+                            }
+                            if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t\t return Translate Outgoing setting");
+                            configTranslateOutgoing.Value = configTranslateOutgoing_temp;
+                        }
+                    }
+                    else
+                    {
+                        if (configVerbose.Value) Log.LogInfo($"\t\t\t\t\t\t Alliance manager instance NOT found. Better to stop");
+                        return;
+                    }
                 }
             }
         }

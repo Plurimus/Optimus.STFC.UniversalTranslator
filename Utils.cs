@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.ComponentModel;
 using System.Collections.Concurrent;
+using STFCUniversalTranslator;
 
 namespace Optimus.STFC.UniversalTranslator
 {
@@ -92,8 +93,15 @@ namespace Optimus.STFC.UniversalTranslator
                 if (writelog) log.LogInfo($"\t\t\t\t language to translate: [{toLanguage.ToString()}]");
 
 
+
                 //var url = $"https://api.deepl.com/v2/translate";      // api Pro
                 var url = $"https://api-free.deepl.com/v2/translate";   // api Free
+                if (UniversalTranslatorPlugin.configUseProxyDeepl.Value)
+                {
+                    url = $"https://universal-translator-1.optimusstfc.workers.dev/v2/translate";   // proxy api free
+                }
+
+
                 if (writelog) log.LogInfo($"\t\t\t\t set url [{url}]");
                 WebRequest request = WebRequest.Create(url);
                 if (writelog) log.LogInfo($"\t\t\t\t created WebRequest [{request.RequestUri}]");
@@ -195,8 +203,13 @@ namespace Optimus.STFC.UniversalTranslator
             {
                 if (writelog) log.LogInfo($"\t\t\t\t Starting method UsageDeepl()");
 
-                //var url = $"https://api.deepl.com/v2/usage";      // api Pro
+                //var url = $"https://api.deepl.com/v2/translate";      // api Pro
                 var url = $"https://api-free.deepl.com/v2/usage";   // api Free
+                if (UniversalTranslatorPlugin.configUseProxyDeepl.Value)
+                {
+                    url = $"https://universal-translator-1.optimusstfc.workers.dev/v2/usage";   // proxy api free
+                }
+
                 if (writelog) log.LogInfo($"\t\t\t\t set url [{url}]");
                 WebRequest request = WebRequest.Create(url);
                 if (writelog) log.LogInfo($"\t\t\t\t created WebRequest [{request.RequestUri}]");
