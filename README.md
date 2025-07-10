@@ -7,7 +7,7 @@ Recommended to use with [BepInExConfigManager.Il2Cpp](https://github.com/sinai-d
 This mod changes some interface windows/pop-ups/menus:
 - Adds button to chat message menu
 - Translates message one by one to choosed language in settings
-- Translates outgoing message oon the fly to choosed in settings language (v1.5.1+)
+- Translates outgoing message on-the-fly to choosed in settings language (v1.5.1+)
 - Sends message to all alliance members by additional button (v1.6.0)
   
 ## How to install
