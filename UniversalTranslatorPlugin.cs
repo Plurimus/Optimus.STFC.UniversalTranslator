@@ -1,28 +1,33 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using BepInEx.Logging;
-using BepInEx.Configuration;
-using HarmonyLib;
-using System;
-using Digit.Client.UI;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using BepInEx.Unity.IL2CPP;
+using Digit.Client.Core;
 using Digit.Client.Tooltip;
-using Optimus.STFC.UniversalTranslator;
-using System.Collections.Generic;
-using System.Threading;
-using System.Text.RegularExpressions;
-using UnhollowerBaseLib;
-using static Optimus.STFC.UniversalTranslator.Utils;
-using Digit.PrimeServer.Core;
-using Digit.PrimePlatform.Services;
+using Digit.Client.UI;
 using Digit.Networking.Core;
-using Utils = Optimus.STFC.UniversalTranslator.Utils;
-using Digit.PrimePlatform.Content;
-using Digit.Prime.Navigation.Managers;
 using Digit.Prime.Alliances;
 using Digit.Prime.FleetManagement;
+using Digit.Prime.Navigation;
+using Digit.Prime.Navigation.Managers;
+using Digit.PrimePlatform.Content;
+using Digit.PrimePlatform.Services;
+using Digit.PrimeServer.Core;
+using HarmonyLib;
+using Il2CppInterop.Runtime;
+using Il2CppInterop.Runtime.Injection;
+using Optimus.STFC.UniversalTranslator;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Threading;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+//using UnhollowerBaseLib;
+using static Optimus.STFC.UniversalTranslator.Utils;
+using Utils = Optimus.STFC.UniversalTranslator.Utils;
 
 namespace STFCUniversalTranslator
 {
@@ -36,7 +41,7 @@ namespace STFCUniversalTranslator
             MODNAME = "UniversalTranslator",
             AUTHOR = "Optimus",
             GUID = AUTHOR + "." + PROJECT + "." + MODNAME,
-            VERSION = MyPluginInfo.PLUGIN_VERSION;   
+            VERSION = MyPluginInfo.PLUGIN_VERSION;
 
         #endregion
 
@@ -173,26 +178,24 @@ namespace STFCUniversalTranslator
 
             Harmony.CreateAndPatchAll(typeof(UniversalTranslatorPlugin));
             Log.LogInfo($"Plugin {GUID} is loaded!");
-
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         #region Login logic
 
         [HarmonyPatch(typeof(GameServer), "Initialise")]
         [HarmonyPostfix]
-        [HarmonyWrapSafe]
-        public static void GetSessionID(string sessionId, string gameVersion, bool encryptRequests)
+        //[HarmonyWrapSafe]
+        public static void GetSessionID(string sessionId, string gameVersion, bool encryptRequests, string serverRegion)
         {
             if (configVerbose.Value) Log.LogInfo($"GameServer:\n" +
-                                                    $"\t\t\t\t sessionId =\t{sessionId}\n" +
-                                                    $"\t\t\t\t gameVersion =\t{gameVersion}\n" +
-                                                    $"\t\t\t\t encryptRequests =\t{encryptRequests}\n");
+                                                    $"\t\t\t\t sessionId       =\t{sessionId}\n" +
+                                                    $"\t\t\t\t gameVersion     =\t{gameVersion}\n" +
+                                                    $"\t\t\t\t encryptRequests =\t{encryptRequests}\n" +
+                                                    $"\t\t\t\t serverRegion    =\t{serverRegion}\n");
 
             translatorButtonRendered = false; // reset rendering of Translator Button
             sendAllButtonRendered = false;
         }
-
-        
 
         #endregion
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

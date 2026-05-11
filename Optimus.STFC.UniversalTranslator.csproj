@@ -1,54 +1,78 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+	<TargetFramework>net6.0</TargetFramework>
     <AssemblyName>Optimus.STFC.UniversalTranslator</AssemblyName>
-    <Description>UniversalTranslator</Description>
-    <Version>1.6.0</Version>
+    <Description>STFC mod UniversalTranslator</Description>
+    <Version>1.7.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-	  <PackageReference Include="BepInEx.IL2CPP" Version="6.0.0-pre.1" IncludeAssets="compile" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
+	  <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.755" IncludeAssets="compile" />
+	  <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*"/>
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\UnhollowedDlls\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Digit.Client.PrimeLib.Runtime">
-      <HintPath>..\UnhollowedDlls\Digit.Client.PrimeLib.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Digit.Engine.Login.Core">
-      <HintPath>..\UnhollowedDlls\Digit.Engine.Login.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Digit.Engine.Login.Prime">
-      <HintPath>..\UnhollowedDlls\Digit.Engine.Login.Prime.dll</HintPath>
-    </Reference>
-    <Reference Include="Digit.Engine.Utilities.Runtime">
-      <HintPath>..\..\UnhollowedDlls\Digit.Engine.Utilities.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Il2Cppmscorlib">
-      <HintPath>..\UnhollowedDlls\Il2Cppmscorlib.dll</HintPath>
-    </Reference>
-    <Reference Include="Kyub.EmojiSearch">
-      <HintPath>..\UnhollowedDlls\Kyub.EmojiSearch.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\UnhollowedDlls\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\UnhollowedDlls\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>..\UnhollowedDlls\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UIModule">
-      <HintPath>..\UnhollowedDlls\UnityEngine.UIModule.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="Assembly-CSharp">
+			<HintPath>..\InteropDlls\Assembly-CSharp.dll</HintPath>
+		</Reference>
+		<Reference Include="Digit.Client.PrimeLib.Runtime">
+			<HintPath>..\InteropDlls\Digit.Client.PrimeLib.Runtime.dll</HintPath>
+		</Reference>
+		<Reference Include="Digit.Engine.Contracts">
+			<HintPath>..\InteropDlls\Digit.Engine.Contracts.dll</HintPath>
+		</Reference>
+		<Reference Include="Digit.Engine.HttpClient.Runtime">
+			<HintPath>..\InteropDlls\Digit.Engine.HTTPClient.Runtime.dll</HintPath>
+		</Reference>
+		<Reference Include="Digit.Engine.Login.Core">
+			<HintPath>..\InteropDlls\Digit.Engine.Login.Core.dll</HintPath>
+		</Reference>
+		<Reference Include="Digit.Engine.Login.Prime">
+			<HintPath>..\InteropDlls\Digit.Engine.Login.Prime.dll</HintPath>
+		</Reference>
+		<Reference Include="Digit.Engine.Utilities.Runtime">
+			<HintPath>..\InteropDlls\Digit.Engine.Utilities.Runtime.dll</HintPath>
+		</Reference>
+		<Reference Include="Il2CppInterop.Runtime">
+			<HintPath>..\InteropDlls\Il2CppInterop.Runtime.dll</HintPath>
+		</Reference>
+		<Reference Include="Il2Cppmscorlib">
+			<HintPath>..\InteropDlls\Il2Cppmscorlib.dll</HintPath>
+		</Reference>
+		<Reference Include="Il2CppSystem">
+			<HintPath>..\InteropDlls\Il2CppSystem.dll</HintPath>
+		</Reference>
+		<Reference Include="Kyub.EmojiSearch">
+		  <HintPath>..\InteropDlls\Kyub.EmojiSearch.dll</HintPath>
+		</Reference>
+		<Reference Include="protobuf-net">
+			<HintPath>..\InteropDlls\protobuf-net.dll</HintPath>
+		</Reference>
+		<Reference Include="protobuf-net.Core">
+			<HintPath>..\InteropDlls\protobuf-net.Core.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.TextMeshPro">
+			<HintPath>..\InteropDlls\Unity.TextMeshPro.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.CoreModule">
+			<HintPath>..\InteropDlls\UnityEngine.CoreModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.ImageConversionModule">
+			<HintPath>..\InteropDlls\UnityEngine.ImageConversionModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.UI">
+			<HintPath>..\InteropDlls\UnityEngine.UI.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.UIModule">
+			<HintPath>..\InteropDlls\UnityEngine.UIModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.UnityWebRequestModule">
+			<HintPath>..\InteropDlls\UnityEngine.UnityWebRequestModule.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 </Project>

@@ -289,7 +289,7 @@ namespace Optimus.STFC.UniversalTranslator
         {
             var key = $"{value.GetType().FullName}.{value}";
 
-            var displayName = DisplayNameCache.GetOrAdd(key, x =>
+            Func<string, string> valueFactory = x =>
             {
                 var name = (DescriptionAttribute[])value
                     .GetType()
@@ -298,7 +298,8 @@ namespace Optimus.STFC.UniversalTranslator
                     .GetCustomAttributes(typeof(DescriptionAttribute), false);
 
                 return name.Length > 0 ? name[0].Description : value.ToString();
-            });
+            };
+            var displayName = DisplayNameCache.GetOrAdd(key, valueFactory);
 
             return displayName;
         }
