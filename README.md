@@ -1,7 +1,7 @@
 # UniversalTranslator plugin/mod for Star Trek Fleet Command™ game client
-Tested with STFC client v1.000.42747 (Update 79.1.1)
-Designed to use with [BepInEx.Legacy](https://github.com/Plurimus/BepInEx.Legacy) framework.
-Recommended to use with [BepInExConfigManager.Il2Cpp](https://github.com/sinai-dev/BepInExConfigManager) plugin as ingame settings editor
+Tested with STFC client v1.000.49105 (Update 90.2.1)
+Designed to use with [BepInEx framework](https://github.com/BepInEx/BepInEx) of [bleeding edge builds 755+ versions](https://builds.bepinex.dev/projects/bepinex_be) .
+Recommended to use with [BepInExConfigManager.Il2Cpp](https://github.com/Jelosus2/BepInExConfigManager) plugin as ingame settings editor
 
 ## What it does
 This mod changes some interface windows/pop-ups/menus:
